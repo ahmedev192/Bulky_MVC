@@ -1,4 +1,6 @@
 using Bulky.DataAccess.Data;
+using Bulky.DataAccess.Rrpository;
+using Bulky.DataAccess.Rrpository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -6,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // 1.0 Adding Db Context To Program.cs
 
