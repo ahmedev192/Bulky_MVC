@@ -1,111 +1,149 @@
-﻿using Bulky.DataAccess.Data;
-using Bulky.DataAccess.Rrpository.IRepository;
+﻿using Bulky.DataAccess.Rrpository.IRepository;
 using Bulky.Models;
+using Bulky.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BulkyWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class CategoryController : Controller
     {
-
         private readonly IUnitOfWork _unitOfWork;
+
         public CategoryController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<Category> objCategoryList = _unitOfWork.Category.GetAll().ToList();
+            // Fetch all categories
+            var categories = await _unitOfWork.Category.GetAllAsync();
 
-            return View(objCategoryList);
+            // Map to view model
+            var viewModel = new CategoryIndexViewModel
+            {
+                Categories = categories
+            };
+
+            return View(viewModel);
         }
-
 
         public IActionResult Create()
         {
             return View();
         }
 
-
-
         [HttpPost]
-        public IActionResult Create(Category obj)
+        public async Task<IActionResult> Create(CategoryCreateEditViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Category.Add(obj);
-                _unitOfWork.Save();
-                TempData["success"] = "Category Created successfully";
+                // Map view model to entity
+                var category = new Category
+                {
+                    Name = model.Name,
+                    DisplayOrder = model.DisplayOrder
+                };
 
-                return RedirectToAction("Index");
+                _unitOfWork.Category.Add(category);
+                await _unitOfWork.SaveAsync();  // Assuming SaveAsync() exists
+                TempData["success"] = "Category created successfully";
+
+                return RedirectToAction(nameof(Index));
             }
-            return View();
+
+            return View(model);
         }
 
-
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null || id == 0)
+            if (id == 0)
             {
                 return NotFound();
             }
-            Category? categoryFromDb = _unitOfWork.Category.Get(u => u.Id == id);
 
+            var categoryFromDb = await _unitOfWork.Category.GetAsync(u => u.Id == id);
             if (categoryFromDb == null)
             {
                 return NotFound();
             }
-            return View(categoryFromDb);
+
+            // Map entity to view model
+            var model = new CategoryCreateEditViewModel
+            {
+                Id = categoryFromDb.Id,
+                Name = categoryFromDb.Name,
+                DisplayOrder = categoryFromDb.DisplayOrder
+            };
+
+            return View(model);
         }
+
         [HttpPost]
-        public IActionResult Edit(Category obj)
+        public async Task<IActionResult> Edit(CategoryCreateEditViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Category.Update(obj);
-                _unitOfWork.Save();
-                TempData["success"] = "Category Updated successfully";
+                // Map view model to entity
+                var category = new Category
+                {
+                    Id = model.Id,
+                    Name = model.Name,
+                    DisplayOrder = model.DisplayOrder
+                };
 
-                return RedirectToAction("Index");
+                _unitOfWork.Category.Update(category);
+                await _unitOfWork.SaveAsync();  // Assuming SaveAsync() exists
+                TempData["success"] = "Category updated successfully";
+
+                return RedirectToAction(nameof(Index));
             }
-            return View();
 
+            return View(model);
         }
 
-
-
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null || id == 0)
+            if (id == 0)
             {
                 return NotFound();
             }
-            Category? categoryFromDb = _unitOfWork.Category.Get(u => u.Id == id);
 
+            var categoryFromDb = await _unitOfWork.Category.GetAsync(u => u.Id == id);
             if (categoryFromDb == null)
             {
                 return NotFound();
             }
-            return View(categoryFromDb);
-        }
 
+            // Map entity to view model
+            var model = new CategoryDetailsViewModel
+            {
+                Id = categoryFromDb.Id,
+                Name = categoryFromDb.Name,
+                DisplayOrder = categoryFromDb.DisplayOrder
+            };
+
+            return View(model);
+        }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePOST(int? id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Category? obj = _unitOfWork.Category.Get(u => u.Id == id);
-            if (obj == null)
+            var category = await _unitOfWork.Category.GetAsync(u => u.Id == id);
+            if (category == null)
             {
                 return NotFound();
             }
-            _unitOfWork.Category.Remove(obj);
-            _unitOfWork.Save();
+
+            _unitOfWork.Category.Remove(category);
+            await _unitOfWork.SaveAsync();  
             TempData["success"] = "Category deleted successfully";
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
     }
 }
