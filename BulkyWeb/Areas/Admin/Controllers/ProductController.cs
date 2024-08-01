@@ -19,15 +19,57 @@ namespace BulkyWeb.Areas.Admin.Controllers
         }
 
         // GET: Admin/Product/Index
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
             var productList = await _unitOfWork.Product.GetAllAsync(includeProperties: "Category");
+            ViewBag.TitleSortParam = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewBag.ISBNSortParam = sortOrder == "isbn" ? "isbn_desc" : "isbn";
+            ViewBag.PriceSortParam = sortOrder == "price" ? "price_desc" : "price";
+            ViewBag.AuthorSortParam = sortOrder == "author" ? "author_desc" : "author";
+            ViewBag.CategorySortParam = sortOrder == "category" ? "category_desc" : "category";
+
+            // Determine the sort order
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    productList = productList.OrderByDescending(p => p.Title).ToList();
+                    break;
+                case "isbn":
+                    productList = productList.OrderBy(p => p.ISBN).ToList();
+                    break;
+                case "isbn_desc":
+                    productList = productList.OrderByDescending(p => p.ISBN).ToList();
+                    break;
+                case "price":
+                    productList = productList.OrderBy(p => p.ListPrice).ToList();
+                    break;
+                case "price_desc":
+                    productList = productList.OrderByDescending(p => p.ListPrice).ToList();
+                    break;
+                case "author":
+                    productList = productList.OrderBy(p => p.Author).ToList();
+                    break;
+                case "author_desc":
+                    productList = productList.OrderByDescending(p => p.Author).ToList();
+                    break;
+                case "category":
+                    productList = productList.OrderBy(p => p.Category.Name).ToList();
+                    break;
+                case "category_desc":
+                    productList = productList.OrderByDescending(p => p.Category.Name).ToList();
+                    break;
+                default:
+                    productList = productList.OrderBy(p => p.Title).ToList();
+                    break;
+            }
+
             var viewModel = new ProductIndexViewModel
             {
-                Products = productList.ToList()
+                Products = productList
             };
             return View(viewModel);
         }
+
 
         // GET: Admin/Product/Create
         public async Task<IActionResult> Create()
