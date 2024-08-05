@@ -35,11 +35,33 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Areas\Admin\Views\Company\Create.cshtml" />
+    <_ContentIncludedByDefault Remove="Areas\Admin\Views\Company\Delete.cshtml" />
+    <_ContentIncludedByDefault Remove="Areas\Admin\Views\Company\Edit.cshtml" />
     <_ContentIncludedByDefault Remove="Areas\Customer\Views\Home\Details.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Areas\Customer\Views\Home\Details.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Areas\Admin\Views\Company\Index.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\Admin\Views\Company\Create.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\Admin\Views\Company\Delete.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\Admin\Views\Company\Edit.cshtml" />
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Bulky.DataAccess.Data
 {
@@ -14,6 +15,8 @@ namespace Bulky.DataAccess.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Company> Companies { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,6 +57,45 @@ namespace Bulky.DataAccess.Data
                 new Product { Id = 19, Title = "Little Women", Description = "A novel by Louisa May Alcott published in 1868.", ISBN = "9780147514010", Author = "Louisa May Alcott", ListPrice = 11.99, Price = 10.99, Price50 = 9.99, Price100 = 8.99 , CategoryId =4, ImageUrl = "" },
                 new Product { Id = 20, Title = "Wuthering Heights", Description = "A novel by Emily Brontë published in 1847.", ISBN = "9781505312561", Author = "Emily Brontë", ListPrice = 13.99, Price = 12.99, Price50 = 11.99, Price100 = 10.99 , CategoryId = 5, ImageUrl = "" }
             );
+
+
+
+
+
+
+            modelBuilder.Entity<Company>().HasData(
+               new Company
+               {
+                   Id = 1,
+                   Name = "Tech Solution",
+                   StreetAddress = "123 Tech St",
+                   City = "Tech City",
+                   PostalCode = "12121",
+                   State = "IL",
+                   PhoneNumber = "6669990000"
+               },
+               new Company
+               {
+                   Id = 2,
+                   Name = "Vivid Books",
+                   StreetAddress = "999 Vid St",
+                   City = "Vid City",
+                   PostalCode = "66666",
+                   State = "IL",
+                   PhoneNumber = "7779990000"
+               },
+               new Company
+               {
+                   Id = 3,
+                   Name = "Readers Club",
+                   StreetAddress = "999 Main St",
+                   City = "Lala land",
+                   PostalCode = "99999",
+                   State = "NY",
+                   PhoneNumber = "1113335555"
+               }
+               );
+
         }
     }
 }
