@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Bulky.Models;
 using Bulky.Utilities;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Stripe;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,9 +21,20 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+
+
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = new PathString("/Identity/Account/Login");
+    options.AccessDeniedPath = "/Account/AccessDenied"; // Path for handling access denied
+});
 
 
 var app = builder.Build();
@@ -37,6 +49,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 
 app.UseRouting();
 app.UseAuthentication();
