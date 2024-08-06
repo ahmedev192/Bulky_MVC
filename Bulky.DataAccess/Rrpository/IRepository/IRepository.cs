@@ -15,5 +15,6 @@ namespace Bulky.DataAccess.Rrpository.IRepository
         void Add(T entity);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entity);
+
     }
 }
