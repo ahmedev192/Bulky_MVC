@@ -44,6 +44,12 @@ builder.Services.AddSession(options => {
 });
 
 
+builder.Services.AddAuthentication().AddFacebook(option =>
+{
+    option.AppId = "8710341372327870";
+    option.AppSecret = "d2d976b30f4d6f1cf19a0561ee04da09";
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

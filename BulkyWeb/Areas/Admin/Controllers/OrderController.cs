@@ -219,6 +219,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
 
             }
+            HttpContext.Session.Clear();
 
 
             return View(orderHeaderId);
