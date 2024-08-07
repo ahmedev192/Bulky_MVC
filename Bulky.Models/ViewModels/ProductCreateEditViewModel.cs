@@ -52,6 +52,6 @@ namespace Bulky.Models.ViewModels
 
         [Display(Name = "Product Image")]
         [ValidateNever]
-        public string ImageUrl { get; set; }
+        public List<ProductImage> ProductImages { get; set; }
     }
 }

@@ -11,7 +11,6 @@
                         Shopping Cart
                     </h5>
                 </div>
-
             </div>
         </div>
         <div class="card-body my-4">
@@ -22,45 +21,61 @@
                     <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary text-uppercase mb-5 btn-sm"><small>Continue Shopping</small></a>
                 </div>
                 <div class="col-md-10 offset-md-1">
-
-                    @foreach(var item in Model.ShoppingCartList){
-                    <div class="row border-bottom pb-3">
-                        <div class="d-none d-lg-block col-lg-1 text-center py-2">
-                            <img src="@item.Product.ImageUrl" class="rounded" width="100%" />
-                        </div>
-                        <div class="col-12 col-lg-6 pt-md-3">
-                            <h5 class="text-uppercase text-secondary"><strong>@item.Product.Title</strong></h5>
-                                <p><small>@Html.Raw(item.Product.Description)</small></p>
-                        </div>
-                        <div class="col-12  col-lg-5 text-center row">
-                            <div class="col-3 text-md-right pt-2 pt-md-4">
-                                <h6 class="fw-semibold">
-                                        @item.Price.ToString("c")
-                                    <span class="text-muted">&nbsp;x&nbsp;</span>@item.Count
-                                </h6>
-                            </div>
-                            <div class="col-6 col-sm-4 col-lg-6 pt-2">
-                                <div class="w-75 btn-group" role="group">
-                                        <a asp-action="plus" asp-route-cartId="@item.Id" class="btn btn-outline-primary bg-gradient py-2">
-                                            <i class="bi bi-plus-square"></i>
-                                    </a> &nbsp;
-                                        <a asp-action="minus" asp-route-cartId="@item.Id" class="btn btn-outline-primary bg-gradient py-2">
-                                            <i class="bi bi-dash-square"></i>
+                    @foreach (var item in Model.ShoppingCartList)
+                    {
+                        <div class="row border-bottom pb-3">
+                            <div class="d-none d-lg-block col-lg-3 text-center py-2">
+                                <!-- Image Slider Start -->
+                                <div id="carouselProductImages_@item.Id" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        @for (var i = 0; i < item.Product.ProductImages.Count; i++)
+                                        {
+                                            var productImage = item.Product.ProductImages[i];
+                                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                                <img src="@productImage.ImageUrl" class="d-block w-100 rounded" alt="Product Image" />
+                                            </div>
+                                        }
+                                    </div>
+                                    <a class="carousel-control-prev" href="#carouselProductImages_@item.Id" role="button" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#carouselProductImages_@item.Id" role="button" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
                                     </a>
                                 </div>
-
+                                <!-- Image Slider End -->
                             </div>
-                            <div class="col-3 col-sm-4 col-lg-2 offset-lg-1 text-right pt-2">
-                                    <a asp-action="remove" asp-route-cartId="@item.Id" class="btn btn-danger bg-gradient py-2 ">
+                            <div class="col-12 col-lg-6 pt-md-3">
+                                <h5 class="text-uppercase text-secondary"><strong>@item.Product.Title</strong></h5>
+                                <p><small>@Html.Raw(item.Product.Description)</small></p>
+                            </div>
+                            <div class="col-12  col-lg-5 text-center row">
+                                <div class="col-3 text-md-right pt-2 pt-md-4">
+                                    <h6 class="fw-semibold">
+                                        @item.Price.ToString("c")
+                                        <span class="text-muted">&nbsp;x&nbsp;</span>@item.Count
+                                    </h6>
+                                </div>
+                                <div class="col-6 col-sm-4 col-lg-6 pt-2">
+                                    <div class="w-75 btn-group" role="group">
+                                        <a asp-action="plus" asp-route-cartId="@item.Id" class="btn btn-outline-primary bg-gradient py-2">
+                                            <i class="bi bi-plus-square"></i>
+                                        </a> &nbsp;
+                                        <a asp-action="minus" asp-route-cartId="@item.Id" class="btn btn-outline-primary bg-gradient py-2">
+                                            <i class="bi bi-dash-square"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-3 col-sm-4 col-lg-2 offset-lg-1 text-right pt-2">
+                                    <a asp-action="remove" asp-route-cartId="@item.Id" class="btn btn-danger bg-gradient py-2">
                                         <i class="bi bi-trash-fill"></i>
-                                </a>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-
-                    </div>
                     }
-
-
                 </div>
             </div>
             <div class="card-footer bg-white border-0">

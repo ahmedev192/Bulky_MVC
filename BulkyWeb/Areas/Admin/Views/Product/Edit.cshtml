@@ -12,7 +12,7 @@
             <input asp-for="Id" hidden />
 
             <div class="border p-3">
-                @*<div asp-validation-summary="ModelOnly"></div>*@
+                <!-- Existing Fields -->
                 <div class="form-floating py-2 col-12">
                     <input asp-for="Title" class="form-control border-0 shadow" />
                     <label asp-for="Title" class="ms-2"></label>
@@ -56,7 +56,7 @@
                     <label asp-for="Price100" class="ms-2"></label>
                     <span asp-validation-for="Price100" class="text-danger"></span>
                 </div>
-                <!-- Optional: Section to choose an existing category -->
+                <!-- Category Selection -->
                 <div class="form-floating py-2 col-12">
                     <select asp-for="CategoryId" class="form-select shadow" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
                         <option value="">Select Existing Category</option>
@@ -64,15 +64,24 @@
                     <label asp-for="CategoryId" class="ms-2"></label>
                     <span asp-validation-for="CategoryId" class="text-danger"></span>
                 </div>
+
                 <!-- Image Upload -->
                 <div class="form-floating py-2 col-12">
-                    <input type="file" name="file" class="form-control border-0 shadow" />
-                    <label asp-for="ImageUrl" class="ms-2"></label>
+                    <input type="file" name="files" class="form-control border-0 shadow" multiple />
+                    <label>Upload Images</label> <!-- Updated label -->
                 </div>
-                <div class="col-2">
-                    <img src="@Model.ImageUrl" width="100%"
-                         style="border-radius:5px; border:1px solid #bbb9b9" />
+
+                <!-- Display Existing Images -->
+                <div class="row">
+                    @foreach (var image in Model.ProductImages)
+                    {
+                        <div class="col-2">
+                            <img src="@image.ImageUrl" width="100%"
+                                 style="border-radius:5px; border:1px solid #bbb9b9" />
+                        </div>
+                    }
                 </div>
+
                 <div class="row pt-2">
                     <div class="col-6 col-md-3">
                         <button type="submit" class="btn btn-primary form-control">Update</button>
@@ -84,14 +93,10 @@
                     </div>
                 </div>
 
-
             </div>
         </form>
     </div>
 </div>
-
-
-
 
 @section Scripts {
     @{

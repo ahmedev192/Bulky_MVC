@@ -87,23 +87,34 @@ namespace BulkyWeb.Areas.Admin.Controllers
         // POST: Admin/Product/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductCreateEditViewModel viewModel , IFormFile? file)
+        public async Task<IActionResult> Create(ProductCreateEditViewModel viewModel, List<IFormFile> files)
         {
             if (ModelState.IsValid)
             {
                 string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
+                viewModel.ProductImages = new List<ProductImage>(); // Initialize the list
+
+                if (files != null && files.Count > 0)
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string productPath = Path.Combine(wwwRootPath, @"Images\Products");
-
-                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                    foreach (var file in files)
                     {
-                        file.CopyTo(fileStream);
-                    }
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        string productPath = Path.Combine(wwwRootPath, @"Images\Products");
 
-                    viewModel.ImageUrl = @"\Images\Products\" + fileName;
+                        using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
+                        // Add the image to the viewModel's ProductImages list
+                        viewModel.ProductImages.Add(new ProductImage
+                        {
+                            ImageUrl = @"\Images\Products\" + fileName,
+                            ProductId = 0 // Temporary, will be set when saving to the database
+                        });
+                    }
                 }
+
                 var product = new Product
                 {
                     Title = viewModel.Title,
@@ -115,17 +126,15 @@ namespace BulkyWeb.Areas.Admin.Controllers
                     Price50 = viewModel.Price50,
                     Price100 = viewModel.Price100,
                     CategoryId = viewModel.CategoryId,
-                    ImageUrl = viewModel.ImageUrl
+                    ProductImages = viewModel.ProductImages // Set the images to the product
                 };
-
-
 
                 _unitOfWork.Product.Add(product);
                 await _unitOfWork.SaveAsync();
                 TempData["success"] = "Product created successfully";
                 return RedirectToAction("Index");
             }
-            viewModel.Categories =await _unitOfWork.Category.GetAllAsync();
+            viewModel.Categories = await _unitOfWork.Category.GetAllAsync();
             return View(viewModel);
         }
 
@@ -137,7 +146,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var product = await _unitOfWork.Product.GetAsync(u => u.Id == id, includeProperties: "Category");
+            var product = await _unitOfWork.Product.GetAsync(u => u.Id == id, includeProperties: "Category,ProductImages");
 
             if (product == null)
             {
@@ -157,7 +166,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
                 Price100 = product.Price100,
                 CategoryId = product.CategoryId,
                 Categories =await _unitOfWork.Category.GetAllAsync(),
-                ImageUrl = product.ImageUrl
+                ProductImages = product.ProductImages
             };
             return View(viewModel);
         }
@@ -165,43 +174,57 @@ namespace BulkyWeb.Areas.Admin.Controllers
         // POST: Admin/Product/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ProductCreateEditViewModel viewModel, IFormFile? file)
+        public async Task<IActionResult> Edit(ProductCreateEditViewModel viewModel, List<IFormFile>? files)
         {
             if (ModelState.IsValid)
             {
-                
                 string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
+                var product = await _unitOfWork.Product.GetAsync(u => u.Id == viewModel.Id, includeProperties: "ProductImages");
+                if (product == null)
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    return NotFound();
+                }
+
+                if (files != null && files.Count > 0)
+                {
                     string productPath = Path.Combine(wwwRootPath, @"Images\Products");
 
-                    if (!string.IsNullOrEmpty(fileName))
+                    // Delete old images
+                    foreach (var image in product.ProductImages)
                     {
-                        var oldData = await _unitOfWork.Product.GetAsync(u => u.Id == viewModel.Id);
-                        string oldFileName = Path.GetFileName(oldData.ImageUrl);
-                        string oldFilePath = Path.Combine(productPath, oldFileName);
-
+                        string oldFilePath = Path.Combine(wwwRootPath, image.ImageUrl.TrimStart('\\'));
                         if (System.IO.File.Exists(oldFilePath))
                         {
                             System.IO.File.Delete(oldFilePath);
                         }
                     }
 
-                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                    // Clear the old images from the database
+                    _unitOfWork.ProductImage.RemoveRange(product.ProductImages);
+                    await _unitOfWork.SaveAsync();
+
+                    // Save new images
+                    foreach (var file in files)
                     {
-                        file.CopyTo(fileStream);
+                        if (file != null)
+                        {
+                            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                            using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                            {
+                                await file.CopyToAsync(fileStream);
+                            }
+
+                            var newImage = new ProductImage
+                            {
+                                ImageUrl = @"\Images\Products\" + fileName,
+                                ProductId = product.Id
+                            };
+                            product.ProductImages.Add(newImage);
+                        }
                     }
-
-                    viewModel.ImageUrl = @"\Images\Products\" + fileName;
                 }
 
-                var product = await _unitOfWork.Product.GetAsync(u => u.Id == viewModel.Id);
-                if (product == null)
-                {
-                    return NotFound();
-                }
-
+                // Update the other product properties
                 product.Title = viewModel.Title;
                 product.Description = viewModel.Description;
                 product.ISBN = viewModel.ISBN;
@@ -211,7 +234,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
                 product.Price50 = viewModel.Price50;
                 product.Price100 = viewModel.Price100;
                 product.CategoryId = viewModel.CategoryId;
-                product.ImageUrl = viewModel.ImageUrl;
 
                 _unitOfWork.Product.Update(product);
                 await _unitOfWork.SaveAsync();
@@ -223,6 +245,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
             return View(viewModel);
         }
 
+
         // GET: Admin/Product/Delete/{id}
         public async Task<IActionResult> Delete(int? id)
         {
@@ -231,7 +254,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var product =await _unitOfWork.Product.GetAsync(u => u.Id == id, includeProperties: "Category");
+            var product =await _unitOfWork.Product.GetAsync(u => u.Id == id, includeProperties: "Category,ProductImages");
             if (product == null)
             {
                 return NotFound();
@@ -249,7 +272,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
                 Price50 = product.Price50,
                 Price100 = product.Price100,
                 CategoryName = product.Category.Name,
-                ImageUrl = product.ImageUrl
+                ProductImages = product.ProductImages
             };
             return View(viewModel);
         }
@@ -259,26 +282,32 @@ namespace BulkyWeb.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product =await _unitOfWork.Product.GetAsync(u => u.Id == id);
+            var product = await _unitOfWork.Product.GetAsync(u => u.Id == id, includeProperties: "ProductImages");
             if (product == null)
             {
                 return NotFound();
             }
+
             string wwwRootPath = _webHostEnvironment.WebRootPath;
 
-            string productPath = Path.Combine(wwwRootPath, @"Images\Products");
-
-            string oldFileName = Path.GetFileName(product.ImageUrl);
-            string oldFilePath = Path.Combine(productPath, oldFileName);
-
-            if (System.IO.File.Exists(oldFilePath))
+            // Loop through each image in the ProductImages list and delete the associated files
+            foreach (var productImage in product.ProductImages)
             {
-                System.IO.File.Delete(oldFilePath);
+                string productPath = Path.Combine(wwwRootPath, productImage.ImageUrl.TrimStart('\\'));
+
+                if (System.IO.File.Exists(productPath))
+                {
+                    System.IO.File.Delete(productPath);
+                }
             }
-        _unitOfWork.Product.Remove(product);
+
+            // Remove the product and save changes to the database
+            _unitOfWork.Product.Remove(product);
             await _unitOfWork.SaveAsync();
+
             TempData["success"] = "Product deleted successfully";
             return RedirectToAction("Index");
         }
+
     }
 }

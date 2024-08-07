@@ -11,7 +11,7 @@
     <div class="card-body p-4">
         <form method="post" class="row" enctype="multipart/form-data">
             <div class="border p-3">
-                @*<div asp-validation-summary="ModelOnly"></div>*@
+                <!-- Product Details -->
                 <div class="form-floating py-2 col-12">
                     <input asp-for="Title" class="form-control border-0 shadow" />
                     <label asp-for="Title" class="ms-2"></label>
@@ -22,7 +22,7 @@
                     <label asp-for="Description" class="ms-2"></label>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
-               
+
                 <div class="form-floating py-2 col-12">
                     <input asp-for="ISBN" class="form-control border-0 shadow" />
                     <label asp-for="ISBN" class="ms-2"></label>
@@ -55,7 +55,8 @@
                     <label asp-for="Price100" class="ms-2"></label>
                     <span asp-validation-for="Price100" class="text-danger"></span>
                 </div>
-                <!-- Optional: Section to choose an existing category -->
+
+                <!-- Category Selection -->
                 <div class="form-floating py-2 col-12">
                     <select asp-for="CategoryId" class="form-select shadow" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
                         <option value="">Select Existing Category</option>
@@ -63,10 +64,11 @@
                     <label asp-for="CategoryId" class="ms-2"></label>
                     <span asp-validation-for="CategoryId" class="text-danger"></span>
                 </div>
+
                 <!-- Image Upload -->
                 <div class="form-floating py-2 col-12">
-                    <input type="file" name="file" class="form-control border-0 shadow" />
-                    <label asp-for="ImageUrl" class="ms-2"></label>
+                    <input type="file" name="files" class="form-control border-0 shadow" multiple />
+                    <label>Upload Images</label> <!-- Updated label -->
                 </div>
 
                 <div class="row pt-2">
@@ -74,20 +76,15 @@
                         <button type="submit" class="btn btn-primary form-control">Create</button>
                     </div>
                     <div class="col-6 col-md-3">
-                        <a asp-controller="Product" asp-action="Index" class="btn btn-outline-primary border  form-control">
+                        <a asp-controller="Product" asp-action="Index" class="btn btn-outline-primary border form-control">
                             Back to List
                         </a>
                     </div>
                 </div>
-
-
             </div>
         </form>
     </div>
 </div>
-
-
-
 
 @section Scripts {
     @{

@@ -7,7 +7,25 @@
             <div class="row p-2">
                 <div class="col-12 p-1">
                     <div class="card border-0 p-3 shadow border-top border-5 rounded" style="width: 300px; height: 650px;">
-                        <img src="@product.ImageUrl" class="card-img-top rounded" style="object-fit: cover; height: 400px;" />
+                        <div id="carousel-@product.Id" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner" style="height: 400px;">
+                                @for (int i = 0; i < product.ProductImages.Count; i++)
+                                {
+                                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                                        <img src="@product.ProductImages[i].ImageUrl" class="d-block w-100 rounded" style="object-fit: cover; height: 400px;" />
+                                    </div>
+                                }
+                            </div>
+                            <a class="carousel-control-prev" href="#carousel-@product.Id" role="button" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#carousel-@product.Id" role="button" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </a>
+                        </div>
+
                         <div class="card-body d-flex flex-column justify-content-between pb-0">
                             <div>
                                 <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@product.Title</p>

@@ -4,6 +4,7 @@ using Bulky.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bulky.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240807154506_Product Images ")]
+    partial class ProductImages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -527,188 +530,6 @@ namespace Bulky.DataAccess.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductImages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ImageUrl = "/Images/Products/riyad-salehen.jpg",
-                            ProductId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ImageUrl = "/Images/Products/Al-Adab Al-Mufrad.jpg",
-                            ProductId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ImageUrl = "/Images/Products/Ihya Ulum al-Din.jpg",
-                            ProductId = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ImageUrl = "/Images/Products/Sahih al-Bukhari.jpg",
-                            ProductId = 4
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ImageUrl = "/Images/Products/Al-Muwatta.jpg",
-                            ProductId = 5
-                        },
-                        new
-                        {
-                            Id = 6,
-                            ImageUrl = "/Images/Products/Tafsir al-Jalalayn.png",
-                            ProductId = 6
-                        },
-                        new
-                        {
-                            Id = 7,
-                            ImageUrl = "/Images/Products/Fath al-Bari.jpg",
-                            ProductId = 7
-                        },
-                        new
-                        {
-                            Id = 8,
-                            ImageUrl = "/Images/Products/The Forty Hadith.jpg",
-                            ProductId = 8
-                        },
-                        new
-                        {
-                            Id = 9,
-                            ImageUrl = "/Images/Products/The Purification of the Soul.jpg",
-                            ProductId = 9
-                        },
-                        new
-                        {
-                            Id = 10,
-                            ImageUrl = "/Images/Products/Kitab al-Tawhid.jpg",
-                            ProductId = 10
-                        },
-                        new
-                        {
-                            Id = 11,
-                            ImageUrl = "/Images/Products/riyad-salehen.jpg",
-                            ProductId = 1
-                        },
-                        new
-                        {
-                            Id = 12,
-                            ImageUrl = "/Images/Products/Al-Adab Al-Mufrad.jpg",
-                            ProductId = 2
-                        },
-                        new
-                        {
-                            Id = 13,
-                            ImageUrl = "/Images/Products/Ihya Ulum al-Din.jpg",
-                            ProductId = 3
-                        },
-                        new
-                        {
-                            Id = 14,
-                            ImageUrl = "/Images/Products/Sahih al-Bukhari.jpg",
-                            ProductId = 4
-                        },
-                        new
-                        {
-                            Id = 15,
-                            ImageUrl = "/Images/Products/Al-Muwatta.jpg",
-                            ProductId = 5
-                        },
-                        new
-                        {
-                            Id = 16,
-                            ImageUrl = "/Images/Products/Tafsir al-Jalalayn.png",
-                            ProductId = 6
-                        },
-                        new
-                        {
-                            Id = 17,
-                            ImageUrl = "/Images/Products/Fath al-Bari.jpg",
-                            ProductId = 7
-                        },
-                        new
-                        {
-                            Id = 18,
-                            ImageUrl = "/Images/Products/The Forty Hadith.jpg",
-                            ProductId = 8
-                        },
-                        new
-                        {
-                            Id = 19,
-                            ImageUrl = "/Images/Products/The Purification of the Soul.jpg",
-                            ProductId = 9
-                        },
-                        new
-                        {
-                            Id = 20,
-                            ImageUrl = "/Images/Products/Kitab al-Tawhid.jpg",
-                            ProductId = 10
-                        },
-                        new
-                        {
-                            Id = 21,
-                            ImageUrl = "/Images/Products/riyad-salehen.jpg",
-                            ProductId = 1
-                        },
-                        new
-                        {
-                            Id = 22,
-                            ImageUrl = "/Images/Products/Al-Adab Al-Mufrad.jpg",
-                            ProductId = 2
-                        },
-                        new
-                        {
-                            Id = 23,
-                            ImageUrl = "/Images/Products/Ihya Ulum al-Din.jpg",
-                            ProductId = 3
-                        },
-                        new
-                        {
-                            Id = 24,
-                            ImageUrl = "/Images/Products/Sahih al-Bukhari.jpg",
-                            ProductId = 4
-                        },
-                        new
-                        {
-                            Id = 25,
-                            ImageUrl = "/Images/Products/Al-Muwatta.jpg",
-                            ProductId = 5
-                        },
-                        new
-                        {
-                            Id = 26,
-                            ImageUrl = "/Images/Products/Tafsir al-Jalalayn.png",
-                            ProductId = 6
-                        },
-                        new
-                        {
-                            Id = 27,
-                            ImageUrl = "/Images/Products/Fath al-Bari.jpg",
-                            ProductId = 7
-                        },
-                        new
-                        {
-                            Id = 28,
-                            ImageUrl = "/Images/Products/The Forty Hadith.jpg",
-                            ProductId = 8
-                        },
-                        new
-                        {
-                            Id = 29,
-                            ImageUrl = "/Images/Products/The Purification of the Soul.jpg",
-                            ProductId = 9
-                        },
-                        new
-                        {
-                            Id = 30,
-                            ImageUrl = "/Images/Products/Kitab al-Tawhid.jpg",
-                            ProductId = 10
-                        });
                 });
 
             modelBuilder.Entity("Bulky.Models.ShoppingCart", b =>

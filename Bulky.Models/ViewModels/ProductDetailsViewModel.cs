@@ -28,6 +28,6 @@ namespace Bulky.Models.ViewModels
         public string CategoryName { get; set; }
         [ValidateNever]
 
-        public string ImageUrl { get; set; }
+        public List<ProductImage> ProductImages { get; set; }
     }
 }

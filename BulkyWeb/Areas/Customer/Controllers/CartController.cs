@@ -32,7 +32,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
             ShoppingCartVM = new()
             {
                 ShoppingCartList = await _unitOfWork.ShoppingCart.GetAllAsync(u => u.ApplicationUserId == userId,
-                includeProperties: "Product"),
+                includeProperties: "Product,Product.ProductImages"),
                 OrderHeader = new()
             };
 

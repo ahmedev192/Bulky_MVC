@@ -37,7 +37,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
                 HttpContext.Session.SetInt32(SD.SessionCart, itemCount);
 
             }
-            IEnumerable<Product> productList = await _unitOfWork.Product.GetAllAsync(includeProperties: "Category");
+            IEnumerable<Product> productList = await _unitOfWork.Product.GetAllAsync(includeProperties: "Category,ProductImages");
             return View(productList);
         }
 
@@ -47,7 +47,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
             Product product = await _unitOfWork.Product.GetAsync(u => u.Id == productId, includeProperties: "Category");
             ShoppingCart cart = new()
             {
-                Product = await _unitOfWork.Product.GetAsync(u => u.Id == productId, includeProperties: "Category"),
+                Product = await _unitOfWork.Product.GetAsync(u => u.Id == productId, includeProperties: "Category,ProductImages"),
                 Count = 1,
                 ProductId = productId
             };
