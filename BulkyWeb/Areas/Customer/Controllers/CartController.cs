@@ -61,6 +61,13 @@ namespace BulkyWeb.Areas.Customer.Controllers
             if (cartFromDb.Count <= 1)
             {
                 //remove that from cart
+                // Get the count asynchronously
+                var cartItems = await _unitOfWork.ShoppingCart.GetAllAsync(u => u.ApplicationUserId == cartFromDb.ApplicationUserId);
+                int cartItemCount = cartItems.Count() - 1;
+
+                // Set the count in the session
+                HttpContext.Session.SetInt32(SD.SessionCart, cartItemCount);
+
                 _unitOfWork.ShoppingCart.Remove(cartFromDb);
             }
             else
@@ -76,6 +83,13 @@ namespace BulkyWeb.Areas.Customer.Controllers
         public async Task<IActionResult> Remove(int cartId)
         {
             var cartFromDb = await  _unitOfWork.ShoppingCart.GetAsync(u => u.Id == cartId);
+            // Get the count asynchronously
+            var cartItems = await _unitOfWork.ShoppingCart.GetAllAsync(u => u.ApplicationUserId == cartFromDb.ApplicationUserId);
+            int cartItemCount = cartItems.Count() - 1;
+
+            // Set the count in the session
+            HttpContext.Session.SetInt32(SD.SessionCart, cartItemCount);
+
             _unitOfWork.ShoppingCart.Remove(cartFromDb);
             await _unitOfWork.SaveAsync();
             return RedirectToAction(nameof(Index));

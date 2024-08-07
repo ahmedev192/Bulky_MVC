@@ -1,5 +1,6 @@
 using Bulky.DataAccess.Rrpository.IRepository;
 using Bulky.Models;
+using Bulky.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -21,6 +22,21 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (claim != null)
+            {
+                // Get all shopping cart items asynchronously
+                var items = await _unitOfWork.ShoppingCart.GetAllAsync(u => u.ApplicationUserId == claim.Value);
+
+                // Count the items
+                int itemCount = items.Count();
+
+                // Now you can use itemCount as needed
+                HttpContext.Session.SetInt32(SD.SessionCart, itemCount);
+
+            }
             IEnumerable<Product> productList = await _unitOfWork.Product.GetAllAsync(includeProperties: "Category");
             return View(productList);
         }
@@ -53,15 +69,25 @@ namespace BulkyWeb.Areas.Customer.Controllers
                 //shopping cart exists
                 cartFromDb.Count += shoppingCart.Count;
                 _unitOfWork.ShoppingCart.Update(cartFromDb);
+                _unitOfWork.SaveAsync();
+                // Get the count asynchronously
+                var cartItem = await _unitOfWork.ShoppingCart.GetAllAsync(u => u.ApplicationUserId == userId);
+                int cartItemCount = cartFromDb.Count;
+
+                // Set the count in the session
+                HttpContext.Session.SetInt32(SD.SessionCart, cartItemCount);
+
             }
             else
             {
                 //add cart record
                 _unitOfWork.ShoppingCart.Add(shoppingCart);
+
+                _unitOfWork.SaveAsync();
+
             }
 
 
-            _unitOfWork.SaveAsync();
             TempData["success"] = "Cart updated successfully";
 
 
